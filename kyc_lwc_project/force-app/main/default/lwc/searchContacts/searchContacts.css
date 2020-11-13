@@ -1,0 +1,29 @@
+div.cardSuccessBox{
+    width: 489px;
+    height: 226px;
+    background-color: #22903e;
+    color: white;
+}
+div.mainSuccessDIV{
+    margin-left: 19%;
+}
+div.cardFailedBox{
+    width: 489px;
+    height: 226px;
+    background-color: #f03f39;
+    color: white;
+}
+div.cardPendingBox{
+    width: 489px;
+    height: 226px;
+    background-color:yellowgreen;
+    color: white;
+}
+div.mainFailedDIV{
+    margin-left: 19%;
+}
+
+/* .aprrovedICON{
+    margin-top: 50%;
+    margin-left: 50%;
+} */

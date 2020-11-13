@@ -1,0 +1,286 @@
+<template>
+    <lightning-card>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col">
+                <lightning-progress-indicator current-step={selectedTabId} type="path" variant="base">
+                    <lightning-progress-step label="Search Customer" value="1">
+                    </lightning-progress-step>
+                    <lightning-progress-step label="Customer Details" value="2">
+                    </lightning-progress-step>
+                    <lightning-progress-step label="Upload Your Identification" value="3"></lightning-progress-step>
+                    <lightning-progress-step label="Acknowledgment" value="4"></lightning-progress-step>
+                    <lightning-progress-step label="Final Review" value="5"></lightning-progress-step>
+                </lightning-progress-indicator>
+            </div>
+        </div>
+    </lightning-card>
+    <br />
+    <lightning-tabset variant="scoped" active-tab-value={selectedTabId}>
+        <lightning-tab label="Search Customer" value="1">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_2-of-12"> </div>
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning-card title="Search Customer">
+                        <div class="slds-m-around_medium">
+                            <div class="slds-m-bottom_small">
+                                <lightning-input type="text" value={sVal} label="Customer Name"
+                                    onchange={updateSeachKey}></lightning-input>
+                            </div>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_6-of-12">
+                                    <lightning-button label="Search" onclick={handleSearch} variant="brand">
+                                    </lightning-button>
+                                </div>
+                                <div class="slds-col slds-size_6-of-12 slds-text-align_right">
+                                    <lightning-button label="New Customer" onclick={navigateToNewContact}
+                                        variant="brand">
+                                    </lightning-button>
+                                </div>
+                            </div>
+
+                            <template if:true={contacts}>
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="First Name">First Name</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Last Name">Last Name</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Phone">Phone</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Email">Email</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Email">Status</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Email">Action</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <!--iterate all contact records using for-each iteration -->
+                                        <template for:each={contacts} for:item="contact">
+                                            <tr class="slds-hint-parent" key={contact.Id}>
+                                                <td>
+                                                    <div class="slds-truncate">{contact.FirstName}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">{contact.LastName}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">
+                                                        <lightning-formatted-phone value={contact.Phone}>
+                                                        </lightning-formatted-phone>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">
+                                                        <lightning-formatted-email value={contact.Email}>
+                                                        </lightning-formatted-email>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">{contact.Document_Approval_Status__c}</div>
+                                                </td>
+                                                <td>
+                                                    <template if:false={contact.Document_Approval_Status__c}>
+                                                    <lightning-button label="Select" variant="brand"
+                                                        icon-name="utility:check" value={contact.Id}
+                                                        onclick={selectContact}></lightning-button>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </template>
+                            <!-- custom data table(with SLDS style) to display contact list  -->
+
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_2-of-12"> </div>
+            </div>
+        </lightning-tab>
+
+
+        <lightning-tab label="Customer Details" value="2">
+
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_2-of-12"> </div>
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning-card title="Customer Details">
+                        <div class="slds-m-around_medium">
+                            <lightning-record-form record-id={selectedContactID} object-api-name="Contact"
+                                layout-type="Full" mode="readonly" columns="2">
+                            </lightning-record-form>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-text-align_center">
+                                <lightning-button label="Verify" onclick={verifyContactDetails} variant="brand">
+                                </lightning-button>
+                            </div>
+                        </div>
+
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_2-of-12"> </div>
+            </div>
+        </lightning-tab>
+
+
+        <lightning-tab label="Upload Your Identification" value="3">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_2-of-12"> </div>
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning-card title="Upload Your Identification">
+                        <div class="slds-m-around_medium">
+                            <fieldset class="slds-form-element slds-form-element_compound">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <lightning-combobox name="documentType" label="Document Type"
+                                                    value={documentType} placeholder="Select Document Type"
+                                                    options={documentTypeOptions} onchange={handleDocumentTypeChnage}>
+                                                </lightning-combobox>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <lightning-input type="file" label="Attachment"
+                                                    onchange={handleFileUploaded}
+                                                    accept="image/png,image/jpg,image/jpeg" multiple>
+                                                </lightning-input>
+                                                <template for:each={filesUploaded} for:item="file">
+                                                    <div key={file.Title} class="slds-text-body_small">{file.Title}
+                                                    </div>
+                                                </template>
+                                                <div if:true={fileErrorMessage}>
+                                                    <p style="color: red;">{fileErrorMessage}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <br>
+                            <br>
+                            <div class="slds-text-align_center">
+                                <lightning-input type="checkbox" name="recordSaveForFuture" label="Save For Future"
+                                    value={recordSaveForFuture} onchange={handleDocumentTypeChnage}></lightning-input>
+                                <br>
+                                <lightning-button variant="brand" label="Save" onclick={createDocumentRecord}
+                                    class="slds-p-top_small">
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_2-of-12"> </div>
+            </div>
+        </lightning-tab>
+
+
+        <lightning-tab label="Acknowledgment" value="4">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_2-of-12"> </div>
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning-card title="Aknowlegment">
+                        <div class="slds-m-around_medium">
+                            <lightning-card>
+                                <lightning-record-form record-id={selectedContactID} object-api-name="Contact"
+                                    layout-type="Full" mode="readonly" columns="2"></lightning-record-form>
+                            </lightning-card>
+                            <lightning-card title="Documents">
+                                <lightning-record-view-form record-id={createdIdentificationDocumentID}
+                                    object-api-name="Identification_Document__c">
+                                    <div class="slds-grid">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-output-field field-name="document_type__c">
+                                            </lightning-output-field>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-output-field field-name="is_record_save_for_future__c">
+                                            </lightning-output-field>
+                                        </div>
+                                    </div>
+                                </lightning-record-view-form>
+                                <template if:true={relatedImageData}>
+                                    <div class="slds-grid">
+                                        <template for:each={relatedImageData} for:item="image">
+                                            <template if:true={image.url}>
+                                                <div class="slds-col slds-size_1-of-2" key={image.Id}>
+                                                    <img width="150" src={image.url} />
+                                                </div>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </template>
+                            </lightning-card>
+                        </div>
+                        
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-text-align_center">
+                                <div>
+                                    <lightning-input type="checkbox" label="I agree to the Terms and Conditions"
+                                        name="agree" onchange={agreeCheckboxHandler}></lightning-input>
+                                </div>
+                                <div>
+                                    <lightning-button label="Agree" class="agreeButton" disabled onclick={agreeAndSignAllDetails} variant="brand">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_2-of-12"> </div>
+            </div>
+        </lightning-tab>
+
+
+        <lightning-tab label="Final Review" value="5">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_12-of-12 slds-text-align_right">
+                    <lightning-button disabled label="Check Status" class="refreshButton" onclick={agreeAndSignAllDetails}
+                        variant="brand">
+                    </lightning-button>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_2-of-12"> </div>
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning-card title="Final Review">
+                        <template if:true={finalStaus}>
+                            <div class="mainSuccessDIV">
+                                <div class="cardSuccessBox slds-text-align_center">
+                                    <lightning-icon icon-name="action:approval" class="aprrovedICON slds-m-top_xx-large"
+                                        alternative-text="Approved" title="Approved">
+                                    </lightning-icon>
+                                    <h2 class="slds-text-heading_medium">voilà !! Your Kyc Is Approved</h2>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={finalStaus}>
+                            <div class="mainFailedDIV">
+                                <div class="statusMessageDIV cardFailedBox slds-text-align_center">
+                                    <lightning-icon icon-name="action:close" class="aprrovedICON slds-m-top_xx-large"
+                                        alternative-text="Approved" title="Approved">
+                                    </lightning-icon>
+                                    <h2 class="slds-text-heading_medium">{statusMessage}</h2>
+                                </div>
+                            </div>
+                        </template>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_2-of-12"> </div>
+            </div>
+        </lightning-tab>
+    </lightning-tabset>
+</template>
